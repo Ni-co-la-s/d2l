@@ -128,11 +128,11 @@ def get_flop_count(
         print(f"Total number of flops: {nb_flops_total}")
         if nb_flops_conv > 0:
             print(
-                f"Number of flopss for Conv layers: {nb_flops_conv} ({100 * nb_flops_conv / nb_flops_total:.2f}% of count)"
+                f"Number of flops for Conv layers: {nb_flops_conv} ({100 * nb_flops_conv / nb_flops_total:.2f}% of count)"
             )
         if nb_flops_linear > 0:
             print(
-                f"Number of flopss for Linear layers: {nb_flops_linear} ({100 * nb_flops_linear / nb_flops_total:.2f}% of count)"
+                f"Number of flops for Linear layers: {nb_flops_linear} ({100 * nb_flops_linear / nb_flops_total:.2f}% of count)"
             )
 
     for h in hooks:
