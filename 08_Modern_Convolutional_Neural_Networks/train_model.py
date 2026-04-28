@@ -19,6 +19,7 @@ from alex_net import AlexNet
 from vgg import VGGSmaller, VGG11, VGG16, VGG19
 from nin import NiN
 from googlenet import GoogLeNet
+from resnet import ResNet18
 
 torch.manual_seed(0)
 torch.cuda.manual_seed(0)
@@ -33,6 +34,7 @@ ModelRegistry: dict[str, nn.Module] = {
     "VGG19": VGG19,
     "NiN": NiN,
     "GoogLeNet": GoogLeNet,
+    "ResNet18": ResNet18,
 }
 
 
