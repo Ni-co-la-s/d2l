@@ -16,6 +16,7 @@ def get_parameter_count(
 
     nb_parameter_conv = 0
     nb_parameter_linear = 0
+    nb_parameter_batch_norm = 0
 
     if verbose:
         print("-" * 120)
@@ -43,8 +44,15 @@ def get_parameter_count(
 
             elif isinstance(module, nn.Linear) or isinstance(module, nn.LazyLinear):
                 nb_parameter_linear += nb_param
+        if isinstance(module, nn.BatchNorm2d):
+            nb_param = 2 * module.num_features  # Only count learnable parameters
+            if verbose:
+                print(f"{name:<25}{module!r:<100}{nb_param:>12} parameters", end="")
+                if total_nb_params is not None:
+                    print(f": {100 * nb_param / total_nb_params:.2f}% of total params")
+            nb_parameter_batch_norm += nb_param
 
-    nb_parameter_total = nb_parameter_linear + nb_parameter_conv
+    nb_parameter_total = nb_parameter_linear + nb_parameter_conv + nb_parameter_batch_norm
 
     if verbose:
         print("-" * 120)
@@ -56,6 +64,10 @@ def get_parameter_count(
         if nb_parameter_linear > 0:
             print(
                 f"Number of parameters for Linear layers: {nb_parameter_linear} ({100 * nb_parameter_linear / nb_parameter_total:.2f}% of count)"
+            )
+        if nb_parameter_batch_norm > 0:
+            print(
+                f"Number of parameters for BatchNorm layers: {nb_parameter_batch_norm} ({100 * nb_parameter_batch_norm / nb_parameter_total:.2f}% of count)"
             )
 
     return nb_parameter_total
