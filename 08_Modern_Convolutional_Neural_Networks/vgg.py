@@ -41,7 +41,7 @@ class VGGBase(nn.Module):
         self.lin2 = nn.Linear(4096, 4096)
         self.lin3 = nn.Linear(4096, 10)
         self.relu = nn.ReLU()
-        self.dropout = nn.Identity()
+        self.dropout = nn.Dropout()
 
     def forward(self, X):
         out = self.blocks(X)
