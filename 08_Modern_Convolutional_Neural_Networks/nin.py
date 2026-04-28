@@ -6,6 +6,7 @@ import torch
 import torch.nn as nn
 from utils import get_detail_model
 
+
 class Block(nn.Module):
     def __init__(self, conv: nn.Module, nb_1_1_conv: int = 2, add_pool: bool = True):
         super().__init__()
@@ -58,9 +59,7 @@ class NiN(NiNBase):
         super().__init__(config=config)
 
 
-
 if __name__ == "__main__":
     model = NiN()
-    dummy_tensor = torch.rand(1,3,224,224)
+    dummy_tensor = torch.rand(1, 3, 224, 224)
     get_detail_model(model, dummy_tensor)
-

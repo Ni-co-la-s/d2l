@@ -7,6 +7,7 @@ import torch.nn as nn
 
 from utils import get_detail_model
 
+
 class AlexNet(nn.Module):
     def __init__(self):
         super().__init__()
@@ -49,6 +50,6 @@ class AlexNet(nn.Module):
 
 
 if __name__ == "__main__":
-    dummy_tensor = torch.rand(1,3,224,224)
+    dummy_tensor = torch.rand(1, 3, 224, 224)
 
     get_detail_model(AlexNet(), dummy_tensor)

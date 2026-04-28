@@ -7,6 +7,7 @@ import torch.nn as nn
 
 from utils import get_detail_model
 
+
 class InceptionBlock(nn.Module):
     def __init__(
         self,
@@ -84,7 +85,8 @@ class GoogLeNet(nn.Module):
 
         return out
 
+
 if __name__ == "__main__":
-    dummy_tensor = torch.rand(1,3,224,224)
+    dummy_tensor = torch.rand(1, 3, 224, 224)
 
     get_detail_model(GoogLeNet(), dummy_tensor)
