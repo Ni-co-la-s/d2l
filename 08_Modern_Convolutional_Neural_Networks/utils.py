@@ -76,11 +76,11 @@ def get_parameter_count(
 def count_flop_forward(module: nn.Module, input: torch.tensor, output: torch.tensor):
 
     if isinstance(module, nn.Conv2d) or isinstance(module, nn.LazyConv2d):
-        # TODO: Handle groups != 1
         H, W = output.shape[2], output.shape[3]
         ci, co = module.in_channels, module.out_channels
         kh, kw = module.kernel_size
-        weights_ops = 2 * H * W * kh * kw * ci * co  # 2 because one for addition and one for multiplication
+        groups = module.groups
+        weights_ops = 2 * H * W * kh * kw * (ci // groups) * co  # 2 because one for addition and one for multiplication
         bias_ops = H * W * co if module.bias is not None else 0
         module._flops = weights_ops + bias_ops
         module._flops_bias = bias_ops
