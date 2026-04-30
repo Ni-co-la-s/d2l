@@ -26,6 +26,7 @@ class TrainConfig:
     num_epochs: int = 30
     use_augmentation: bool = False
     initialization: Initialization = Initialization.Xavier
+    num_classes: int = 10
 
 
 @dataclass

@@ -34,7 +34,7 @@ class Residual(nn.Module):
 
 
 class ResNet18(nn.Module):
-    def __init__(self):
+    def __init__(self, num_classes:int=10):
         super().__init__()
         self.conv1 = nn.Conv2d(3, 64, 7, 2, 3, bias=False)
         self.bn1 = nn.BatchNorm2d(64)
@@ -47,7 +47,7 @@ class ResNet18(nn.Module):
         self.block6 = Residual(256, 256, False)
         self.block7 = Residual(256, 512, True)
         self.block8 = Residual(512, 512, False)
-        self.lin = nn.Linear(512, 10)
+        self.lin = nn.Linear(512, num_classes)
         self.relu = nn.ReLU()
 
     def forward(self, X: torch.tensor):

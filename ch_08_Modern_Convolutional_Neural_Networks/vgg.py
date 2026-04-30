@@ -28,7 +28,7 @@ class Block(nn.Module):
 
 
 class VGGBase(nn.Module):
-    def __init__(self, arch: tuple):
+    def __init__(self, arch: tuple, num_classes:int=10):
         super().__init__()
         list_blocks = []
         input_channel = 3  # rgb images
@@ -39,7 +39,7 @@ class VGGBase(nn.Module):
 
         self.lin1 = nn.LazyLinear(4096)
         self.lin2 = nn.Linear(4096, 4096)
-        self.lin3 = nn.Linear(4096, 10)
+        self.lin3 = nn.Linear(4096, num_classes)
         self.relu = nn.ReLU()
         self.dropout = nn.Dropout()
 
@@ -57,23 +57,23 @@ class VGGBase(nn.Module):
 
 
 class VGGSmaller(VGGBase):
-    def __init__(self):
-        super().__init__(arch=((1, 16), (1, 32), (2, 64), (2, 128), (2, 128)))
+    def __init__(self, num_classes:int=10):
+        super().__init__(arch=((1, 16), (1, 32), (2, 64), (2, 128), (2, 128)), num_classes=num_classes)
 
 
 class VGG11(VGGBase):
-    def __init__(self):
-        super().__init__(arch=((1, 64), (1, 128), (2, 256), (2, 512), (2, 512)))
+    def __init__(self, num_classes:int=10):
+        super().__init__(arch=((1, 64), (1, 128), (2, 256), (2, 512), (2, 512)), num_classes=num_classes)
 
 
 class VGG16(VGGBase):
-    def __init__(self):
-        super().__init__(arch=((2, 64), (2, 128), (3, 256), (3, 512), (3, 512)))
+    def __init__(self, num_classes:int=10):
+        super().__init__(arch=((2, 64), (2, 128), (3, 256), (3, 512), (3, 512)), num_classes=num_classes)
 
 
 class VGG19(VGGBase):
-    def __init__(self):
-        super().__init__(arch=((2, 64), (2, 128), (4, 256), (4, 512), (4, 512)))
+    def __init__(self, num_classes:int=10):
+        super().__init__(arch=((2, 64), (2, 128), (4, 256), (4, 512), (4, 512)), num_classes=num_classes)
 
 
 if __name__ == "__main__":

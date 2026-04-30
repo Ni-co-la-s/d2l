@@ -154,6 +154,13 @@ if __name__ == "__main__":
         type=get_initializer,
     )
 
+    parser.add_argument(
+        "--num_classes",
+        help="Number of classes in the dataset (default 10 for imagenette)",
+        type=int,
+        default=10,
+    )
+
     args = parser.parse_args()
 
     config = TrainConfig()
@@ -191,9 +198,12 @@ if __name__ == "__main__":
     if args.initialization:
         config.initialization = args.initialization
 
+    if args.num_classes:
+        config.num_classes = args.num_classes
+
     print(config)
 
-    model = args.model().to(config.device)
+    model = args.model(num_classes=config.num_classes).to(config.device)
 
     with torch.no_grad():
         dummy_input = torch.zeros(1, 3, 224, 224)  # Pass dummy input to materialize the lazy layers

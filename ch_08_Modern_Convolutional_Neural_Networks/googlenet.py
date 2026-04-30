@@ -36,7 +36,7 @@ class InceptionBlock(nn.Module):
 
 
 class GoogLeNet(nn.Module):
-    def __init__(self):
+    def __init__(self, num_classes:int=10):
         super().__init__()
         self.conv1 = nn.Conv2d(3, 64, 7, 2, 3)
         self.conv2 = nn.Conv2d(64, 64, 1)
@@ -55,7 +55,7 @@ class GoogLeNet(nn.Module):
             InceptionBlock(832, 256, (160, 320), (32, 128), 128), InceptionBlock(832, 384, (192, 384), (48, 128), 128)
         )
 
-        self.lin = nn.Linear(1024, 10)
+        self.lin = nn.Linear(1024, num_classes)
 
         self.pool = nn.MaxPool2d(3, 2, 1)
         self.relu = nn.ReLU()
