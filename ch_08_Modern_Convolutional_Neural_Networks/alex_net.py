@@ -4,6 +4,7 @@ Implementation of AlexNet (Chapter 8.1)
 
 import torch
 import torch.nn as nn
+from typing import cast
 
 from ch_08_Modern_Convolutional_Neural_Networks.utils import get_detail_model
 
@@ -24,7 +25,7 @@ class AlexNet(nn.Module):
         self.pool = nn.MaxPool2d(3, 2)  # kernel_size, padding
         self.dropout = nn.Dropout(0.5)
 
-    def forward(self, X):
+    def forward(self, X: torch.Tensor) -> torch.Tensor:
         out = self.conv1(X)
         out = self.pool(out)
         out = self.relu(out)
@@ -46,7 +47,7 @@ class AlexNet(nn.Module):
         out = self.relu(out)
         out = self.dropout(out)
         out = self.lin3(out)
-        return out
+        return cast(torch.Tensor, out)
 
 
 if __name__ == "__main__":

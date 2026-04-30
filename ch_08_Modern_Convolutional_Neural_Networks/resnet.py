@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from typing import cast
 
 from ch_08_Modern_Convolutional_Neural_Networks.utils import get_detail_model
 
@@ -7,6 +8,7 @@ from ch_08_Modern_Convolutional_Neural_Networks.utils import get_detail_model
 class Residual(nn.Module):
     def __init__(self, in_channels: int, out_channels: int, use_11_conv: bool):
         super().__init__()
+        self.conv3: nn.Conv2d | None
         if use_11_conv:
             self.conv1 = nn.Conv2d(in_channels, out_channels, 3, 2, 1, bias=False)
             self.conv3 = nn.Conv2d(in_channels, out_channels, 1, 2, 0, bias=False)
@@ -20,7 +22,7 @@ class Residual(nn.Module):
         self.bn2 = nn.BatchNorm2d(out_channels)
         self.relu = nn.ReLU()
 
-    def forward(self, X: torch.tensor):
+    def forward(self, X: torch.Tensor) -> torch.Tensor:
         out = self.conv1(X)
         out = self.bn1(out)
         out = self.relu(out)
@@ -30,7 +32,7 @@ class Residual(nn.Module):
             out = out + self.bn3(self.conv3(X))
         else:
             out = out + X
-        return self.relu(out)
+        return cast(torch.Tensor, self.relu(out))
 
 
 class ResNet18(nn.Module):
@@ -50,7 +52,7 @@ class ResNet18(nn.Module):
         self.lin = nn.Linear(512, num_classes)
         self.relu = nn.ReLU()
 
-    def forward(self, X: torch.tensor):
+    def forward(self, X: torch.Tensor) -> torch.Tensor:
         out = self.conv1(X)
         out = self.bn1(out)
         out = self.pool(out)
@@ -65,7 +67,7 @@ class ResNet18(nn.Module):
         out = self.block8(out)
         out = torch.mean(out, dim=(2, 3))
         out = self.lin(out)
-        return out
+        return cast(torch.Tensor, out)
 
 
 if __name__ == "__main__":

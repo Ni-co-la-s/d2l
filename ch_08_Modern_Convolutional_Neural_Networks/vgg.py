@@ -5,6 +5,7 @@ Implementation of VGG (Chapter 8.2).
 import torch
 import torch.nn as nn
 
+from typing import cast
 from ch_08_Modern_Convolutional_Neural_Networks.utils import get_detail_model
 
 
@@ -18,13 +19,13 @@ class Block(nn.Module):
         self.pool = nn.MaxPool2d(2, 2)
         self.relu = nn.ReLU()
 
-    def forward(self, X):
+    def forward(self, X: torch.Tensor) -> torch.Tensor:
         out = X
         for conv in self.convs:
             out = conv(out)
             out = self.relu(out)
         out = self.pool(out)
-        return out
+        return cast(torch.Tensor, out)
 
 
 class VGGBase(nn.Module):
@@ -43,7 +44,7 @@ class VGGBase(nn.Module):
         self.relu = nn.ReLU()
         self.dropout = nn.Dropout()
 
-    def forward(self, X):
+    def forward(self, X: torch.Tensor) -> torch.Tensor:
         out = self.blocks(X)
         out = torch.flatten(out, 1)
         out = self.lin1(out)
@@ -53,7 +54,7 @@ class VGGBase(nn.Module):
         out = self.relu(out)
         out = self.dropout(out)
         out = self.lin3(out)
-        return out
+        return cast(torch.Tensor, out)
 
 
 class VGGSmaller(VGGBase):

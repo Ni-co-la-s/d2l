@@ -15,10 +15,10 @@ class Initialization(Enum):
 
 @dataclass
 class TrainConfig:
-    project_name: str = None
+    project_name: str | None = None
     run_name: str | None = "AlexNet_augmentation_adam"
     group_name: str | None = None
-    dataset_name: str | None = "Imagenette"
+    dataset_name: str = "Imagenette"
     optim: Optim = Optim.ADAM
     lr: float = 0.0001
     device: str = "cuda"

@@ -11,6 +11,8 @@ from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
 import wandb
 
+from collections.abc import Callable
+
 import argparse
 
 from ch_08_Modern_Convolutional_Neural_Networks.config import TrainConfig, Optim, Initialization
@@ -26,7 +28,7 @@ torch.cuda.manual_seed(0)
 torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
-ModelRegistry: dict[str, nn.Module] = {
+ModelRegistry: dict[str, type[nn.Module]] = {
     "AlexNet": AlexNet,
     "VGGSmaller": VGGSmaller,
     "VGG11": VGG11,
@@ -38,21 +40,21 @@ ModelRegistry: dict[str, nn.Module] = {
 }
 
 
-def get_model(name: str):
+def get_model(name: str) -> type[nn.Module] | None:
     try:
         return ModelRegistry[name]
     except KeyError:
         raise argparse.ArgumentTypeError(f"Invalid model '{name}'. Choose from: {ModelRegistry.keys()}")
 
 
-def get_optimizer(name: str):
+def get_optimizer(name: str) -> Optim | None:
     try:
         return Optim[name]
     except KeyError:
         raise argparse.ArgumentTypeError(f"Invalid optimizer '{name}'. Choose from: {[o.name for o in Optim]}")
 
 
-def get_initializer(name: str):
+def get_initializer(name: str) -> Initialization | None:
     try:
         return Initialization[name]
     except KeyError:
@@ -61,8 +63,8 @@ def get_initializer(name: str):
         )
 
 
-def init_weights(initialization: Initialization):
-    def _init(m):
+def init_weights(initialization: Initialization) -> Callable[[nn.Module], None]:
+    def _init(m: nn.Module) -> None:
         if initialization == Initialization.Kaiming:
             if isinstance(m, (nn.Conv2d, nn.LazyConv2d)):
                 nn.init.kaiming_normal_(m.weight, mode="fan_out", nonlinearity="relu")
@@ -277,6 +279,8 @@ if __name__ == "__main__":
 
     criterion = nn.CrossEntropyLoss()
 
+    optimizer: torch.optim.Optimizer
+
     if config.optim == Optim.ADAM:
         optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)
     elif config.optim == Optim.SGD:
@@ -284,8 +288,8 @@ if __name__ == "__main__":
 
     for epoch in range(config.num_epochs):
         model.train()
-        train_loss = 0
-        train_accuracy = 0
+        train_loss = 0.0
+        train_accuracy = 0.0
 
         for batch_idx, (X, y) in enumerate(train_loader):
             global_step = epoch * len(train_loader) + batch_idx
@@ -320,8 +324,8 @@ if __name__ == "__main__":
         train_loss /= len(train_loader)
 
         model.eval()
-        val_loss = 0
-        val_accuracy = 0
+        val_loss = 0.0
+        val_accuracy = 0.0
 
         with torch.no_grad():
             for batch_idx, (X, y) in enumerate(val_loader):

@@ -4,6 +4,7 @@ Implementation of NiN (Chapter 8.3)
 
 import torch
 import torch.nn as nn
+from typing import cast
 from ch_08_Modern_Convolutional_Neural_Networks.utils import get_detail_model
 
 
@@ -11,7 +12,7 @@ class Block(nn.Module):
     def __init__(self, conv: nn.Module, nb_1_1_conv: int = 2, add_pool: bool = True):
         super().__init__()
 
-        self.out_channels = conv.out_channels
+        self.out_channels = cast(int, conv.out_channels)
 
         self.conv = conv
         self.relu = nn.ReLU()
@@ -20,7 +21,7 @@ class Block(nn.Module):
         )
         self.pool = nn.MaxPool2d(3, 2) if add_pool else None
 
-    def forward(self, X):
+    def forward(self, X: torch.Tensor) -> torch.Tensor:
         out = self.conv(X)
         out = self.relu(out)
         for conv1_1 in self.convs1_1:
@@ -28,7 +29,7 @@ class Block(nn.Module):
             out = self.relu(out)
         if self.pool is not None:
             out = self.pool(out)
-        return out
+        return cast(torch.Tensor, out)
 
 
 class NiNBase(nn.Module):
@@ -42,7 +43,7 @@ class NiNBase(nn.Module):
             list_blocks.append(Block(block_cfg[0], block_cfg[1], block_cfg[2]))
         self.blocks = nn.Sequential(*list_blocks)
 
-    def forward(self, X):
+    def forward(self, X: torch.Tensor) -> torch.Tensor:
         out = self.blocks(X)
         out = torch.mean(out, (2, 3))
         return out

@@ -4,6 +4,7 @@ Implementation of GoogLeNet (Chapter 8.4)
 
 import torch
 import torch.nn as nn
+from typing import cast
 
 from ch_08_Modern_Convolutional_Neural_Networks.utils import get_detail_model
 
@@ -27,7 +28,7 @@ class InceptionBlock(nn.Module):
         )
         self.b4 = nn.Sequential(nn.MaxPool2d(3, 1, 1), nn.Conv2d(in_channels, c4, 1), nn.ReLU())
 
-    def forward(self, X):
+    def forward(self, X: torch.Tensor) -> torch.Tensor:
         out1 = self.b1(X)
         out2 = self.b2(X)
         out3 = self.b3(X)
@@ -60,7 +61,7 @@ class GoogLeNet(nn.Module):
         self.pool = nn.MaxPool2d(3, 2, 1)
         self.relu = nn.ReLU()
 
-    def forward(self, X):
+    def forward(self, X: torch.Tensor) -> torch.Tensor:
         out = self.conv1(X)
         out = self.relu(out)
         out = self.pool(out)
@@ -83,7 +84,7 @@ class GoogLeNet(nn.Module):
 
         out = self.lin(out)
 
-        return out
+        return cast(torch.Tensor, out)
 
 
 if __name__ == "__main__":
