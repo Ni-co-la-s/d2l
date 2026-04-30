@@ -13,13 +13,13 @@ import wandb
 
 import argparse
 
-from config import TrainConfig, Optim, Initialization
+from ch_08_Modern_Convolutional_Neural_Networks.config import TrainConfig, Optim, Initialization
 
-from alex_net import AlexNet
-from vgg import VGGSmaller, VGG11, VGG16, VGG19
-from nin import NiN
-from googlenet import GoogLeNet
-from resnet import ResNet18
+from ch_08_Modern_Convolutional_Neural_Networks.alex_net import AlexNet
+from ch_08_Modern_Convolutional_Neural_Networks.vgg import VGGSmaller, VGG11, VGG16, VGG19
+from ch_08_Modern_Convolutional_Neural_Networks.nin import NiN
+from ch_08_Modern_Convolutional_Neural_Networks.googlenet import GoogLeNet
+from ch_08_Modern_Convolutional_Neural_Networks.resnet import ResNet18
 
 torch.manual_seed(0)
 torch.cuda.manual_seed(0)

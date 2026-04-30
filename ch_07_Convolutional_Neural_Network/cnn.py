@@ -17,7 +17,7 @@ from enum import Enum
 from dataclasses import dataclass
 
 import wandb
-import modules
+import ch_07_Convolutional_Neural_Network.modules as modules
 import matplotlib.pyplot as plt
 
 torch.manual_seed(0)

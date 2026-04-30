@@ -5,7 +5,7 @@ Implementation of AlexNet (Chapter 8.1)
 import torch
 import torch.nn as nn
 
-from utils import get_detail_model
+from ch_08_Modern_Convolutional_Neural_Networks.utils import get_detail_model
 
 
 class AlexNet(nn.Module):
