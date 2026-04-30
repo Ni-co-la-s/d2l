@@ -157,7 +157,7 @@ def log_activations(
     plt.close("all")
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     X = torch.rand(1, 1, 28, 28)
 
     config = Config()

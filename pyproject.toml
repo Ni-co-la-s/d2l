@@ -14,6 +14,7 @@ dev = [
     "mypy",
     "pytest",
     "pre-commit",
+    "pytest-cov",
 ]
 [build-system]
 requires = ["setuptools"]

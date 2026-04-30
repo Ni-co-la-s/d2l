@@ -83,7 +83,7 @@ def init_weights(initialization: Initialization) -> Callable[[nn.Module], None]:
     return _init
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     parser = argparse.ArgumentParser(description="Run models on reduced version of ImageNet")
 
     parser.add_argument(
