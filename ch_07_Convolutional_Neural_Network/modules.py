@@ -8,19 +8,17 @@ import torch.nn.functional as F
 
 
 class Linear(nn.Module):
-    def __init__(self, in_features, out_features, bias=True):
+    def __init__(self, in_features: int, out_features: int, bias: bool = True):
         super().__init__()
         self.in_features = in_features
         self.out_features = out_features
 
         self.weight = nn.Parameter(torch.zeros(out_features, in_features))
+        self.bias: nn.Parameter | None = None
         if bias:
             self.bias = nn.Parameter(torch.zeros(out_features))
-        else:
-            self.bias = None
 
-    def forward(self, X):
-
+    def forward(self, X: torch.Tensor) -> torch.Tensor:
         out = X @ self.weight.T
         if self.bias is not None:
             out += self.bias
@@ -28,7 +26,7 @@ class Linear(nn.Module):
 
 
 class MaxPool2d(nn.Module):
-    def __init__(self, kernel_size, stride=None, padding=0):
+    def __init__(self, kernel_size: int | tuple, stride: int | tuple | None = None, padding: int = 0):
         super().__init__()
 
         if isinstance(kernel_size, int):
@@ -56,7 +54,7 @@ class MaxPool2d(nn.Module):
         else:
             raise ValueError("padding should be an integer")
 
-    def forward(self, X):
+    def forward(self, X: torch.Tensor) -> torch.Tensor:
         B, C, H, W = X.shape
         Kh, Kw = self.kernel_size
         Sh, Sw = self.stride
@@ -80,7 +78,15 @@ class MaxPool2d(nn.Module):
 
 
 class Conv2dNotOpti(nn.Module):
-    def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=0, bias=True):
+    def __init__(
+        self,
+        in_channels: int,
+        out_channels: int,
+        kernel_size: int | tuple,
+        stride: int | tuple = 1,
+        padding: int = 0,
+        bias: bool = True,
+    ):
         super().__init__()
         if isinstance(kernel_size, int):
             self.kernel_size = (kernel_size, kernel_size)
@@ -108,16 +114,15 @@ class Conv2dNotOpti(nn.Module):
         self.in_channels = in_channels
         self.out_channels = out_channels
 
+        self.bias: nn.Parameter | None = None
         if bias:
             self.bias = nn.Parameter(torch.zeros(out_channels))  # bias is of shape (Co)
-        else:
-            self.bias = None
 
         self.weight = nn.Parameter(
             torch.zeros(out_channels, in_channels, *self.kernel_size)
         )  # Kernel is of shape (Co,Ci,Kh, Kw)
 
-    def forward(self, X):  # X is of shape (B,Ci,H,W)
+    def forward(self, X: torch.Tensor) -> torch.Tensor:  # X is of shape (B,Ci,H,W)
         B, Ci, H, W = X.shape
         Co, Ci, Kh, Kw = self.weight.shape
         Sh, Sw = self.stride
@@ -135,7 +140,7 @@ class Conv2dNotOpti(nn.Module):
             for d in range(Co):
                 for i in range(Ho):
                     for j in range(Wo):
-                        acc = 0
+                        acc = torch.tensor(0.0)
                         for a in range(Kh):
                             for b in range(Kw):
                                 for c in range(Ci):
@@ -151,7 +156,15 @@ class Conv2dNotOpti(nn.Module):
 
 
 class Conv2d(nn.Module):
-    def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=0, bias=True):
+    def __init__(
+        self,
+        in_channels: int,
+        out_channels: int,
+        kernel_size: int | tuple,
+        stride: int | tuple = 1,
+        padding: int = 0,
+        bias: bool = True,
+    ):
         super().__init__()
         if isinstance(kernel_size, int):
             self.kernel_size = (kernel_size, kernel_size)
@@ -179,16 +192,15 @@ class Conv2d(nn.Module):
         self.in_channels = in_channels
         self.out_channels = out_channels
 
+        self.bias: nn.Parameter | None = None
         if bias:
             self.bias = nn.Parameter(torch.zeros(out_channels))  # bias is of shape (Co)
-        else:
-            self.bias = None
 
         self.weight = nn.Parameter(
             torch.zeros(out_channels, in_channels, *self.kernel_size)
         )  # Kernel is of shape (Co,Ci,Kh, Kw)
 
-    def forward(self, X):  # X is of shape (B,Ci,H,W)
+    def forward(self, X: torch.Tensor) -> torch.Tensor:  # X is of shape (B,Ci,H,W)
         B, Ci, H, W = X.shape
         Co, Ci, Kh, Kw = self.weight.shape
         Sh, Sw = self.stride

@@ -19,63 +19,13 @@ from dataclasses import dataclass
 import wandb
 import ch_07_Convolutional_Neural_Network.modules as modules
 import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
+from typing import cast
 
 torch.manual_seed(0)
 torch.cuda.manual_seed(0)
 torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
-
-
-def make_grid_image(tensor):
-    tensor = tensor[:5, :, :]  # Not too mamy fig on graph
-    C, H, W = tensor.shape
-    fig, axes = plt.subplots(1, C, figsize=(C * 2, 2))
-    for i in range(C):
-        axes[i].imshow(tensor[i].cpu().detach().numpy(), cmap="gray")
-        axes[i].axis("off")
-    plt.tight_layout()
-    return fig
-
-
-def make_activation_bar(tensor):
-    fig, ax = plt.subplots(figsize=(10, 2))
-    ax.bar(range(len(tensor)), tensor.cpu().detach().numpy())
-    return fig
-
-
-def to_wandb_image(img_tensor):
-    arr = img_tensor.cpu().numpy()
-    arr = ((arr - arr.min()) / (arr.max() - arr.min() + 1e-8) * 255).astype("uint8")
-    return wandb.Image(arr)
-
-
-def log_activations(model, real_img, noisy_image, epoch, global_step):
-    model.eval()
-    with torch.no_grad():
-        for label, img in [("real", real_img), ("noisy", noisy_image)]:
-            img = img.to(config.device)
-
-            a1 = F.relu(model.pool1(model.conv1(img)))
-            a2 = F.relu(model.pool2(model.conv2(a1)))
-            out = a2.reshape(a2.shape[0], -1)
-            a3 = F.relu(model.lin1(out))
-            a4 = F.relu(model.lin2(a3))
-            a5 = F.softmax(model.lin3(a4), dim=1)
-
-            wandb.log(
-                {
-                    "epoch": epoch,
-                    f"activations/{label}/input": wandb.Image(img.cpu().numpy()),
-                    f"activations/{label}/conv1": wandb.Image(make_grid_image(a1[0])),
-                    f"activations/{label}/conv2": wandb.Image(make_grid_image(a2[0])),
-                    f"activations/{label}/lin1": wandb.Image(make_activation_bar(a3[0])),
-                    f"activations/{label}/lin2": wandb.Image(make_activation_bar(a4[0])),
-                    f"activations/{label}/output": wandb.Image(make_activation_bar(a5[0])),
-                },
-                step=global_step,
-            )
-
-    plt.close("all")
 
 
 class Implementation(Enum):
@@ -103,7 +53,7 @@ class Config:
     optim: Optim = Optim.ADAM
     lr: float = 1e-2
     project_name: str = "d2l"
-    run_name: str = None
+    run_name: str | None = None
     job_type: str = "CNN"
     dataset: DatasetVersion = DatasetVersion.MNIST
 
@@ -111,6 +61,9 @@ class Config:
 class CNN(nn.Module):
     def __init__(self, implem: Implementation):
         super().__init__()
+        conv: type[nn.Module]
+        pool: type[nn.Module]
+        linear: type[nn.Module]
         if implem == Implementation.TORCH:
             conv = nn.Conv2d
             pool = nn.MaxPool2d
@@ -134,7 +87,7 @@ class CNN(nn.Module):
         self.lin2 = linear(120, 84)
         self.lin3 = linear(84, 10)
 
-    def forward(self, X):
+    def forward(self, X: torch.Tensor) -> torch.Tensor:
         out = self.conv1(X)
         out = self.pool1(out)
         out = F.relu(out)
@@ -147,7 +100,61 @@ class CNN(nn.Module):
         out = self.lin2(out)
         out = F.relu(out)
         out = self.lin3(out)
-        return out
+        return cast(torch.Tensor, out)
+
+
+def make_grid_image(tensor: torch.Tensor) -> Figure:
+    tensor = tensor[:5, :, :]  # Not too mamy fig on graph
+    C, H, W = tensor.shape
+    fig, axes = plt.subplots(1, C, figsize=(C * 2, 2))
+    for i in range(C):
+        axes[i].imshow(tensor[i].cpu().detach().numpy(), cmap="gray")
+        axes[i].axis("off")
+    plt.tight_layout()
+    return fig
+
+
+def make_activation_bar(tensor: torch.Tensor) -> Figure:
+    fig, ax = plt.subplots(figsize=(10, 2))
+    ax.bar(range(len(tensor)), tensor.cpu().detach().numpy())
+    return fig
+
+
+def to_wandb_image(img_tensor: torch.Tensor) -> wandb.Image:
+    arr = img_tensor.cpu().numpy()
+    arr = ((arr - arr.min()) / (arr.max() - arr.min() + 1e-8) * 255).astype("uint8")
+    return wandb.Image(arr)
+
+
+def log_activations(
+    model: CNN, real_img: torch.Tensor, noisy_image: torch.Tensor, epoch: int, global_step: int
+) -> None:
+    model.eval()
+    with torch.no_grad():
+        for label, img in [("real", real_img), ("noisy", noisy_image)]:
+            img = img.to(config.device)
+
+            a1 = F.relu(model.pool1(model.conv1(img)))
+            a2 = F.relu(model.pool2(model.conv2(a1)))
+            out = a2.reshape(a2.shape[0], -1)
+            a3 = F.relu(model.lin1(out))
+            a4 = F.relu(model.lin2(a3))
+            a5 = F.softmax(model.lin3(a4), dim=1)
+
+            wandb.log(
+                {
+                    "epoch": epoch,
+                    f"activations/{label}/input": wandb.Image(img.cpu().numpy()),
+                    f"activations/{label}/conv1": wandb.Image(make_grid_image(a1[0])),
+                    f"activations/{label}/conv2": wandb.Image(make_grid_image(a2[0])),
+                    f"activations/{label}/lin1": wandb.Image(make_activation_bar(a3[0])),
+                    f"activations/{label}/lin2": wandb.Image(make_activation_bar(a4[0])),
+                    f"activations/{label}/output": wandb.Image(make_activation_bar(a5[0])),
+                },
+                step=global_step,
+            )
+
+    plt.close("all")
 
 
 if __name__ == "__main__":
@@ -189,6 +196,7 @@ if __name__ == "__main__":
 
     criterion = nn.CrossEntropyLoss()
 
+    optimizer: torch.optim.Optimizer
     if config.optim == Optim.SGD:
         optimizer = torch.optim.SGD(model.parameters(), lr=config.lr)
     elif config.optim == Optim.ADAM:
@@ -216,8 +224,8 @@ if __name__ == "__main__":
 
     for epoch in range(config.num_epochs):
         model.train()
-        train_loss = 0
-        train_accuracy = 0
+        train_loss = 0.0
+        train_accuracy = 0.0
         for batch_idx, (X, y) in enumerate(train_loader):
             global_step = epoch * len(train_loader) + batch_idx
 
@@ -250,8 +258,8 @@ if __name__ == "__main__":
         train_accuracy /= len(train_loader)
 
         model.eval()
-        test_loss = 0
-        test_accuracy = 0
+        test_loss = 0.0
+        test_accuracy = 0.0
         with torch.no_grad():
             for batch_idx, (X, y) in enumerate(test_loader):
                 X = X.to(config.device)
