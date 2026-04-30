@@ -33,7 +33,7 @@ class MaxPool2d(nn.Module):
 
         if isinstance(kernel_size, int):
             self.kernel_size = (kernel_size, kernel_size)
-        elif isinstance(kernel_size, tuple) and kernel_size.shape == 2:
+        elif isinstance(kernel_size, tuple) and len(kernel_size) == 2:
             self.kernel_size = kernel_size
         else:
             raise ValueError(
@@ -44,7 +44,7 @@ class MaxPool2d(nn.Module):
             self.stride = self.kernel_size
         elif isinstance(stride, int):
             self.stride = (stride, stride)
-        elif isinstance(stride, tuple) and stride.shape == 2:
+        elif isinstance(stride, tuple) and len(stride) == 2:
             self.stride = stride
         else:
             raise ValueError(
@@ -84,7 +84,7 @@ class Conv2dNotOpti(nn.Module):
         super().__init__()
         if isinstance(kernel_size, int):
             self.kernel_size = (kernel_size, kernel_size)
-        elif isinstance(kernel_size, tuple) and kernel_size.shape == 2:
+        elif isinstance(kernel_size, tuple) and len(kernel_size) == 2:
             self.kernel_size = kernel_size
         else:
             raise ValueError(
@@ -93,7 +93,7 @@ class Conv2dNotOpti(nn.Module):
 
         if isinstance(stride, int):
             self.stride = (stride, stride)
-        elif isinstance(stride, tuple) and stride.shape == 2:
+        elif isinstance(stride, tuple) and len(stride) == 2:
             self.stride = stride
         else:
             raise ValueError(
@@ -155,7 +155,7 @@ class Conv2d(nn.Module):
         super().__init__()
         if isinstance(kernel_size, int):
             self.kernel_size = (kernel_size, kernel_size)
-        elif isinstance(kernel_size, tuple) and kernel_size.shape == 2:
+        elif isinstance(kernel_size, tuple) and len(kernel_size) == 2:
             self.kernel_size = kernel_size
         else:
             raise ValueError(
@@ -164,7 +164,7 @@ class Conv2d(nn.Module):
 
         if isinstance(stride, int):
             self.stride = (stride, stride)
-        elif isinstance(stride, tuple) and stride.shape == 2:
+        elif isinstance(stride, tuple) and len(stride) == 2:
             self.stride = stride
         else:
             raise ValueError(
