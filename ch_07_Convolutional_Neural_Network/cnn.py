@@ -150,136 +150,134 @@ class CNN(nn.Module):
         return out
 
 
-X = torch.rand(1, 1, 28, 28)
+if __name__ == "__main__":
+    X = torch.rand(1, 1, 28, 28)
 
+    config = Config()
+    config.implem = Implementation.TORCH
+    config.device = "cuda"
+    config.num_epochs = 10
+    config.batch_size = 32
+    config.optim = Optim.SGD
+    config.lr = 1e-2
+    config.project_name = "d2l"
+    config.run_name = "torch_with_base_params"
+    config.job_type = "CNN"
+    config.dataset = DatasetVersion.FASHION_MNIST
 
-config = Config()
-config.implem = Implementation.TORCH
-config.device = "cuda"
-config.num_epochs = 10
-config.batch_size = 32
-config.optim = Optim.SGD
-config.lr = 1e-2
-config.project_name = "d2l"
-config.run_name = "torch_with_base_params"
-config.job_type = "CNN"
-config.dataset = DatasetVersion.FASHION_MNIST
+    transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))])
 
+    if config.dataset == DatasetVersion.MNIST:
+        train_dataset = datasets.MNIST(root="data", train=True, download=True, transform=transform)
 
-transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))])
+        test_dataset = datasets.MNIST(root="data", train=False, download=True, transform=transform)
 
-if config.dataset == DatasetVersion.MNIST:
-    train_dataset = datasets.MNIST(root="data", train=True, download=True, transform=transform)
+    else:
+        train_dataset = datasets.FashionMNIST(root="data", train=True, download=True, transform=transform)
 
-    test_dataset = datasets.MNIST(root="data", train=False, download=True, transform=transform)
+        test_dataset = datasets.FashionMNIST(root="data", train=False, download=True, transform=transform)
 
-else:
-    train_dataset = datasets.FashionMNIST(root="data", train=True, download=True, transform=transform)
+    train_loader = DataLoader(train_dataset, batch_size=config.batch_size, shuffle=False)
 
-    test_dataset = datasets.FashionMNIST(root="data", train=False, download=True, transform=transform)
+    test_loader = DataLoader(test_dataset, batch_size=config.batch_size, shuffle=False)
 
-train_loader = DataLoader(train_dataset, batch_size=config.batch_size, shuffle=False)
+    model = CNN(config.implem).to(config.device)
 
-test_loader = DataLoader(test_dataset, batch_size=config.batch_size, shuffle=False)
+    if config.implem != Implementation.TORCH:
+        model2 = CNN(Implementation.TORCH).to(config.device)
+        model.load_state_dict(model2.state_dict())
 
-model = CNN(config.implem).to(config.device)
+    criterion = nn.CrossEntropyLoss()
 
-if config.implem != Implementation.TORCH:
-    model2 = CNN(Implementation.TORCH).to(config.device)
-    model.load_state_dict(model2.state_dict())
+    if config.optim == Optim.SGD:
+        optimizer = torch.optim.SGD(model.parameters(), lr=config.lr)
+    elif config.optim == Optim.ADAM:
+        optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)
 
-criterion = nn.CrossEntropyLoss()
-
-if config.optim == Optim.SGD:
-    optimizer = torch.optim.SGD(model.parameters(), lr=config.lr)
-elif config.optim == Optim.ADAM:
-    optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)
-
-if config.project_name is not None:
-    wandb.init(
-        project=config.project_name,
-        name=config.run_name,
-        job_type=config.job_type,
-        config={
-            "config": {k: v for k, v in vars(config).items() if not callable(v)},
-            "model": {
-                name: {
-                    "shape": list(param.shape),
-                    "params": param.numel(),
-                }
-                for name, param in model.named_parameters()
+    if config.project_name is not None:
+        wandb.init(
+            project=config.project_name,
+            name=config.run_name,
+            job_type=config.job_type,
+            config={
+                "config": {k: v for k, v in vars(config).items() if not callable(v)},
+                "model": {
+                    name: {
+                        "shape": list(param.shape),
+                        "params": param.numel(),
+                    }
+                    for name, param in model.named_parameters()
+                },
             },
-        },
-    )
-    wandb.define_metric("epoch")
-    wandb.define_metric("train/epoch_*", step_metric="epoch")
-    wandb.define_metric("val/*", step_metric="epoch")
+        )
+        wandb.define_metric("epoch")
+        wandb.define_metric("train/epoch_*", step_metric="epoch")
+        wandb.define_metric("val/*", step_metric="epoch")
 
+    for epoch in range(config.num_epochs):
+        model.train()
+        train_loss = 0
+        train_accuracy = 0
+        for batch_idx, (X, y) in enumerate(train_loader):
+            global_step = epoch * len(train_loader) + batch_idx
 
-for epoch in range(config.num_epochs):
-    model.train()
-    train_loss = 0
-    train_accuracy = 0
-    for batch_idx, (X, y) in enumerate(train_loader):
-        global_step = epoch * len(train_loader) + batch_idx
+            X = X.to(config.device)
+            y = y.to(config.device)
 
-        X = X.to(config.device)
-        y = y.to(config.device)
+            optimizer.zero_grad()
 
-        optimizer.zero_grad()
+            output = model(X)
+            accuracy = (output.argmax(1) == y).sum() / config.batch_size
+            train_accuracy += accuracy
 
-        output = model(X)
-        accuracy = (output.argmax(1) == y).sum() / config.batch_size
-        train_accuracy += accuracy
+            loss = criterion(output, y)
+            step_loss = loss.item()
+            train_loss += loss.item()
+            loss.backward()
+            optimizer.step()
 
-        loss = criterion(output, y)
-        step_loss = loss.item()
-        train_loss += loss.item()
-        loss.backward()
-        optimizer.step()
+            if config.project_name is not None:
+                wandb.log(
+                    {
+                        "epoch": epoch,
+                        "train/accuracy": accuracy,
+                        "train/loss": step_loss,
+                    },
+                    step=global_step,
+                )
+
+        train_loss /= len(train_loader)
+        train_accuracy /= len(train_loader)
+
+        model.eval()
+        test_loss = 0
+        test_accuracy = 0
+        with torch.no_grad():
+            for batch_idx, (X, y) in enumerate(test_loader):
+                X = X.to(config.device)
+                y = y.to(config.device)
+                output = model(X)
+                test_loss += criterion(output, y).item()
+                accuracy = (output.argmax(1) == y).sum() / config.batch_size
+                test_accuracy += accuracy
+
+                if batch_idx == 0 and config.project_name is not None:
+                    noisy = torch.rand(1, 1, 28, 28)
+                    real = X[:1, :, :, :]
+                    log_activations(model, real, noisy, epoch, global_step)
+
+        test_loss /= len(test_loader)
+        test_accuracy /= len(test_loader)
+        print(f"Epoch: {epoch}, Train loss = {train_loss}, Test loss = {test_loss}")
 
         if config.project_name is not None:
             wandb.log(
                 {
                     "epoch": epoch,
-                    "train/accuracy": accuracy,
-                    "train/loss": step_loss,
+                    "train/epoch_loss": train_loss,
+                    "train/epoch_acc": train_accuracy,
+                    "val/loss": test_loss,
+                    "val/acc": test_accuracy,
                 },
                 step=global_step,
             )
-
-    train_loss /= len(train_loader)
-    train_accuracy /= len(train_loader)
-
-    model.eval()
-    test_loss = 0
-    test_accuracy = 0
-    with torch.no_grad():
-        for batch_idx, (X, y) in enumerate(test_loader):
-            X = X.to(config.device)
-            y = y.to(config.device)
-            output = model(X)
-            test_loss += criterion(output, y).item()
-            accuracy = (output.argmax(1) == y).sum() / config.batch_size
-            test_accuracy += accuracy
-
-            if batch_idx == 0 and config.project_name is not None:
-                noisy = torch.rand(1, 1, 28, 28)
-                real = X[:1, :, :, :]
-                log_activations(model, real, noisy, epoch, global_step)
-
-    test_loss /= len(test_loader)
-    test_accuracy /= len(test_loader)
-    print(f"Epoch: {epoch}, Train loss = {train_loss}, Test loss = {test_loss}")
-
-    if config.project_name is not None:
-        wandb.log(
-            {
-                "epoch": epoch,
-                "train/epoch_loss": train_loss,
-                "train/epoch_acc": train_accuracy,
-                "val/loss": test_loss,
-                "val/acc": test_accuracy,
-            },
-            step=global_step,
-        )
