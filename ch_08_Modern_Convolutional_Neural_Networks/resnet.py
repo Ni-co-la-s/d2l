@@ -1,3 +1,7 @@
+"""
+Implementation of ResNet18 (Chapter 8.6)
+"""
+
 import torch
 import torch.nn as nn
 from typing import cast
