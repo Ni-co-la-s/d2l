@@ -64,14 +64,16 @@ def get_initializer(name: str):
 def init_weights(initialization: Initialization):
     def _init(m):
         if initialization == Initialization.Kaiming:
-            if isinstance(m, nn.Conv2d):
+            if isinstance(m, (nn.Conv2d, nn.LazyConv2d)):
                 nn.init.kaiming_normal_(m.weight, mode="fan_out", nonlinearity="relu")
-                nn.init.zeros_(m.bias)
-            elif isinstance(m, nn.Linear):
+                if m.bias is not None:
+                    nn.init.zeros_(m.bias)
+            elif isinstance(m, (nn.Linear, nn.LazyLinear)):
                 nn.init.normal_(m.weight, mean=0, std=0.01)
-                nn.init.zeros_(m.bias)
+                if m.bias is not None:
+                    nn.init.zeros_(m.bias)
         elif initialization == Initialization.Xavier:
-            if isinstance(m, (nn.Conv2d, nn.Linear)):
+            if isinstance(m, (nn.Conv2d, nn.Linear, nn.LazyConv2d, nn.LazyLinear)):
                 nn.init.xavier_uniform_(m.weight)
 
     return _init
