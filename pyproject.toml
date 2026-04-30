@@ -6,9 +6,20 @@ dependencies = [
     "torch",
     "wandb",
     "matplotlib",
-    "torchvision"
+    "torchvision",
 ]
+[project.optional-dependencies]
+dev = [
+    "ruff",
+    "mypy",
+    "pytest",
+]
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
 
+[tool.setuptools.packages.find]
+include = ["ch*"]
 
 # ── Ruff ──────────────────────────────────────────────────────────────────────
 [tool.ruff]
@@ -23,9 +34,14 @@ indent-style = "space"
 [tool.mypy]
 python_version = "3.10"
 check_untyped_defs = true
-disallow_untyped_defs = false
+disallow_untyped_defs = true
 warn_return_any = true
 warn_unused_ignores = true
 no_implicit_optional = true
 ignore_missing_imports = true
 
+warn_unreachable = true
+warn_redundant_casts = true
+strict_equality = true
+disallow_any_generics = false
+disallow_incomplete_defs = true
