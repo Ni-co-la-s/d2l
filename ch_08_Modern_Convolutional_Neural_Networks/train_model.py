@@ -22,6 +22,7 @@ from ch_08_Modern_Convolutional_Neural_Networks.vgg import VGGSmaller, VGG11, VG
 from ch_08_Modern_Convolutional_Neural_Networks.nin import NiN
 from ch_08_Modern_Convolutional_Neural_Networks.googlenet import GoogLeNet
 from ch_08_Modern_Convolutional_Neural_Networks.resnet import ResNet18
+from ch_08_Modern_Convolutional_Neural_Networks.resnext import ResNext50_32x4d
 
 torch.manual_seed(0)
 torch.cuda.manual_seed(0)
@@ -37,6 +38,7 @@ ModelRegistry: dict[str, type[nn.Module]] = {
     "NiN": NiN,
     "GoogLeNet": GoogLeNet,
     "ResNet18": ResNet18,
+    "ResNext50": ResNext50_32x4d,
 }
 
 
