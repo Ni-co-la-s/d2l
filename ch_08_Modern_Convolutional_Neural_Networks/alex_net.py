@@ -9,7 +9,7 @@ from ch_08_Modern_Convolutional_Neural_Networks.utils import get_detail_model
 
 
 class AlexNet(nn.Module):
-    def __init__(self, num_classes:int=10):
+    def __init__(self, num_classes: int = 10):
         super().__init__()
         self.conv1 = nn.Conv2d(3, 96, 11, 4, 0)  # in_channels, out_channels, kernel_size, stride, padding
         self.conv2 = nn.Conv2d(96, 256, 5, 1, 2)

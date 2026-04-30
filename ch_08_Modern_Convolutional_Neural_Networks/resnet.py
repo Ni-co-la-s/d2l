@@ -34,7 +34,7 @@ class Residual(nn.Module):
 
 
 class ResNet18(nn.Module):
-    def __init__(self, num_classes:int=10):
+    def __init__(self, num_classes: int = 10):
         super().__init__()
         self.conv1 = nn.Conv2d(3, 64, 7, 2, 3, bias=False)
         self.bn1 = nn.BatchNorm2d(64)

@@ -49,7 +49,7 @@ class NiNBase(nn.Module):
 
 
 class NiN(NiNBase):
-    def __init__(self, num_classes:int=10):
+    def __init__(self, num_classes: int = 10):
         config = (
             (nn.Conv2d(3, 96, 11, 4), 2, True),
             (nn.Conv2d(96, 256, 5, 1, 2), 2, True),
