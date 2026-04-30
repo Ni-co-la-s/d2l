@@ -10,9 +10,10 @@ dependencies = [
 ]
 [project.optional-dependencies]
 dev = [
-    "ruff",
+    "ruff==0.15.12",
     "mypy",
     "pytest",
+    "pre-commit",
 ]
 [build-system]
 requires = ["setuptools"]
