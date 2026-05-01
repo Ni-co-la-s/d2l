@@ -47,3 +47,4 @@ warn_redundant_casts = true
 strict_equality = true
 disallow_any_generics = false
 disallow_incomplete_defs = true
+exclude = ["build/"]
