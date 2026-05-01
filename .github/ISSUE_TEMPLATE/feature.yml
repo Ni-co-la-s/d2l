@@ -1,0 +1,31 @@
+name: Feature Request
+description: Suggest a new capability or improvement
+labels: [enhancement]
+body:
+  - type: input
+    id: summary
+    attributes:
+      label: Summary
+      placeholder: "Add support GoogLeNet model"
+    validations:
+      required: true
+  - type: textarea
+    id: implementation
+    attributes:
+      label: Implementation Notes
+      description: Technical approach, key challenges, or references
+      placeholder: |
+        - [ ] Implement Inception block
+        - [ ] Implement GoogLeNet following implementation
+        - [ ] Test parameter count and FLOPs and compare with reference
+        - [ ] Run training with uv run train_model.py
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - Low
+        - Medium
+        - High
+    validations:
+      required: true

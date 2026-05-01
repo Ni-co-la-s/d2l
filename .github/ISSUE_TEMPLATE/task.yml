@@ -1,0 +1,38 @@
+name: Task
+description: Internal work or maintenance
+labels: [task]
+body:
+  - type: input
+    id: summary
+    attributes:
+      label: Summary
+      placeholder: "Set up GitHub Actions for CI"
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Why does this task need to be done?
+      placeholder: "Current CI setup is unreliable and doesn't catch issues before merge"
+    validations:
+      required: true      
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: What needs to be accomplished?
+      placeholder: |
+        - [ ] Add linting workflow with ruff
+        - [ ] Add pytest workflow
+        - [ ] Configure matrix testing for Python 3.10-3.12  
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - Low
+        - Medium
+        - High
+    validations:
+      required: true
