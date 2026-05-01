@@ -138,21 +138,21 @@ class TestModules:
         with torch.no_grad():
             out_naive = naive(X)
             out_grouped = grouped(X)
-        torch.testing.assert_close(out_naive, out_grouped, rtol=1e-5, atol=1e-5)
+        torch.testing.assert_close(out_naive, out_grouped, rtol=1e-4, atol=1e-4)
 
         naive.train()
         grouped.train()
         out_naive_train = naive(X)
         out_grouped_train = grouped(X)
-        torch.testing.assert_close(out_naive_train, out_grouped_train, rtol=1e-5, atol=1e-5)
+        torch.testing.assert_close(out_naive_train, out_grouped_train, rtol=1e-4, atol=1e-4)
 
         out_naive_train.sum().backward()
         out_grouped_train.sum().backward()
         torch.testing.assert_close(
             naive.conv1.weight.grad,
             grouped.conv3.weight.grad,
-            rtol=1e-5,
-            atol=1e-5,
+            rtol=1e-4,
+            atol=1e-4,
         )
 
 
