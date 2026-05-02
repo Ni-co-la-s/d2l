@@ -52,7 +52,7 @@ class Config:
     batch_size: int = 32
     optim: Optim = Optim.ADAM
     lr: float = 1e-2
-    project_name: str = "d2l"
+    project_name: str | None = "d2l"
     run_name: str | None = None
     job_type: str = "CNN"
     dataset: DatasetVersion = DatasetVersion.MNIST
