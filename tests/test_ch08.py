@@ -252,7 +252,7 @@ class TestModels:
         - GoogLeNet is not included because the d2l chapter diverged from the original paper (no batch norm)
         """
         model = model_cls(num_classes=num_classes)
-        dummy_tensor = torch.rand(1, 3, 224, 224)
+        dummy_tensor = torch.randn(1, 3, 224, 224)
         n = utils.get_parameter_count(model, dummy_tensor, verbose=False)
         assert n == expected_params, f"got {n:,} for model {model.__class__.__name__}, expected {expected_params:,}"
 
@@ -315,6 +315,6 @@ class TestModels:
         - GoogLeNet is not included because the d2l chapter diverged from the original paper (no batch norm)
         """
         model = model_cls(num_classes=num_classes)
-        dummy_tensor = torch.rand(1, 3, 224, 224)
+        dummy_tensor = torch.randn(1, 3, 224, 224)
         flops = utils.get_flop_count(model, dummy_tensor, verbose=False) / 2
         assert flops == pytest.approx(published, rel=0.005)
