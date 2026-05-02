@@ -164,7 +164,7 @@ if __name__ == "__main__":  # pragma: no cover
     config.implem = Implementation.TORCH
     config.device = "cuda"
     config.num_epochs = 10
-    config.batch_size = 32
+    config.batch_size = 128
     config.optim = Optim.SGD
     config.lr = 1e-2
     config.project_name = "d2l"
