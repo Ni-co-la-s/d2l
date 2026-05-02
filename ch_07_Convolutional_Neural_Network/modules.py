@@ -59,7 +59,7 @@ class MaxPool2d(nn.Module):
         Kh, Kw = self.kernel_size
         Sh, Sw = self.stride
         # Add padding
-        X_pad = F.pad(X, (self.padding, self.padding, self.padding, self.padding), mode="constant", value=0)
+        X_pad = F.pad(X, (self.padding, self.padding, self.padding, self.padding), mode="constant", value=float("-inf"))
 
         # Define output
         Ho = (H + 2 * self.padding - Kh) // Sh + 1
