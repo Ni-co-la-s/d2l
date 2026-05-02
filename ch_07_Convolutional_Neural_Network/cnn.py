@@ -196,6 +196,12 @@ if __name__ == "__main__":  # pragma: no cover
 
     criterion = nn.CrossEntropyLoss()
 
+    def init_cnn(module: nn.Module) -> None:
+        if isinstance(module, (nn.Linear, nn.Conv2d)):
+            nn.init.xavier_uniform_(module.weight)
+
+    model.apply(init_cnn)
+
     optimizer: torch.optim.Optimizer
     if config.optim == Optim.SGD:
         optimizer = torch.optim.SGD(model.parameters(), lr=config.lr)
