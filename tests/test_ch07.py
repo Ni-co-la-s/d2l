@@ -21,7 +21,7 @@ class TestModules:
         lin_new.weight = nn.Parameter(lin_base.weight)
         if bias:
             lin_new.bias = nn.Parameter(lin_base.bias)
-        X = torch.rand(2, in_features)
+        X = torch.randn(2, in_features)
         out_base = lin_base(X)
         out_new = lin_new(X)
         torch.testing.assert_close(out_base, out_new)
@@ -49,7 +49,7 @@ class TestModules:
         """
         pool_base = nn.MaxPool2d(kernel_size, stride, padding)
         pool_new = modules.MaxPool2d(kernel_size, stride, padding)
-        X = torch.rand(in_shape)
+        X = torch.randn(in_shape)
         out_base = pool_base(X)
         out_new = pool_new(X)
         torch.testing.assert_close(out_base, out_new)
@@ -89,7 +89,7 @@ class TestModules:
         conv_new.weight = nn.Parameter(conv_base.weight)
         if bias and conv_base.bias is not None:
             conv_new.bias = nn.Parameter(conv_base.bias)
-        X = torch.rand(batch_size, in_channels, *image_size)
+        X = torch.randn(batch_size, in_channels, *image_size)
         out_base = conv_base(X)
         out_new = conv_new(X)
         torch.testing.assert_close(out_base, out_new)
@@ -134,7 +134,7 @@ class TestModules:
         conv_new.weight = nn.Parameter(conv_base.weight)
         if bias and conv_base.bias is not None:
             conv_new.bias = nn.Parameter(conv_base.bias)
-        X = torch.rand(batch_size, in_channels, *image_size)
+        X = torch.randn(batch_size, in_channels, *image_size)
         out_base = conv_base(X)
         out_new = conv_new(X)
         torch.testing.assert_close(out_base, out_new)
@@ -160,7 +160,7 @@ class TestCNN:
 
         cnn_new.load_state_dict(cnn_base.state_dict())
 
-        X = torch.rand(1, 1, 28, 28)
+        X = torch.randn(1, 1, 28, 28)
         out_base = cnn_base(X)
         out_new = cnn_new(X)
         torch.testing.assert_close(out_base, out_new)
