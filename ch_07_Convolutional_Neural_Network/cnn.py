@@ -52,7 +52,7 @@ class Config:
     batch_size: int = 32
     optim: Optim = Optim.ADAM
     lr: float = 1e-2
-    project_name: str = "d2l"
+    project_name: str | None = "d2l"
     run_name: str | None = None
     job_type: str = "CNN"
     dataset: DatasetVersion = DatasetVersion.MNIST
@@ -164,7 +164,7 @@ if __name__ == "__main__":  # pragma: no cover
     config.implem = Implementation.TORCH
     config.device = "cuda"
     config.num_epochs = 10
-    config.batch_size = 32
+    config.batch_size = 128
     config.optim = Optim.SGD
     config.lr = 1e-2
     config.project_name = "d2l"
@@ -172,7 +172,7 @@ if __name__ == "__main__":  # pragma: no cover
     config.job_type = "CNN"
     config.dataset = DatasetVersion.FASHION_MNIST
 
-    transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))])
+    transform = transforms.Compose([transforms.ToTensor()])
 
     if config.dataset == DatasetVersion.MNIST:
         train_dataset = datasets.MNIST(root="data", train=True, download=True, transform=transform)
@@ -195,6 +195,12 @@ if __name__ == "__main__":  # pragma: no cover
         model.load_state_dict(model2.state_dict())
 
     criterion = nn.CrossEntropyLoss()
+
+    def init_cnn(module: nn.Module) -> None:
+        if isinstance(module, (nn.Linear, nn.Conv2d)):
+            nn.init.xavier_uniform_(module.weight)
+
+    model.apply(init_cnn)
 
     optimizer: torch.optim.Optimizer
     if config.optim == Optim.SGD:
