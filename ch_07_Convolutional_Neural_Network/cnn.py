@@ -172,7 +172,7 @@ if __name__ == "__main__":  # pragma: no cover
     config.job_type = "CNN"
     config.dataset = DatasetVersion.FASHION_MNIST
 
-    transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))])
+    transform = transforms.Compose([transforms.ToTensor()])
 
     if config.dataset == DatasetVersion.MNIST:
         train_dataset = datasets.MNIST(root="data", train=True, download=True, transform=transform)
