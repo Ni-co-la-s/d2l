@@ -65,7 +65,7 @@ class MaxPool2d(nn.Module):
         Ho = (H + 2 * self.padding - Kh) // Sh + 1
         Wo = (W + 2 * self.padding - Kw) // Sw + 1
 
-        out = torch.zeros(B, C, Ho, Wo)
+        out = X.new_zeros(B, C, Ho, Wo)
 
         for n in range(B):
             for d in range(C):
@@ -133,14 +133,14 @@ class Conv2dNotOpti(nn.Module):
         Ho = (H + 2 * self.padding - Kh) // Sh + 1
         Wo = (W + 2 * self.padding - Kw) // Sw + 1
 
-        out = torch.zeros(B, Co, Ho, Wo)
+        out = X.new_zeros(B, Co, Ho, Wo)
 
         # Main algo
         for n in range(B):
             for d in range(Co):
                 for i in range(Ho):
                     for j in range(Wo):
-                        acc = torch.tensor(0.0)
+                        acc = X.new_tensor(0.0)
                         for a in range(Kh):
                             for b in range(Kw):
                                 for c in range(Ci):
