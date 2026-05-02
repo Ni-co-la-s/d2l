@@ -9,6 +9,7 @@ from ch_08_Modern_Convolutional_Neural_Networks import (
     resnet,
     resnext,
     vgg,
+    dense_net,
 )
 import ch_08_Modern_Convolutional_Neural_Networks.utils as utils
 
@@ -171,6 +172,9 @@ class TestModels:
             googlenet.GoogLeNet,
             resnet.ResNet18,
             resnext.ResNext50_32x4d,
+            dense_net.DenseNet_121,
+            dense_net.DenseNet_169,
+            dense_net.DenseNet_201,
         ],
     )
     @pytest.mark.parametrize("input_shape", [(2, 3, 224, 224)])
@@ -224,6 +228,21 @@ class TestModels:
                 1000,
                 25_028_904,  # https://docs.pytorch.org/vision/main/models/generated/torchvision.models.resnext50_32x4d.html
             ),
+            (
+                dense_net.DenseNet_121,
+                1000,
+                7_978_856,  # https://docs.pytorch.org/vision/main/models/generated/torchvision.models.densenet121.html
+            ),
+            (
+                dense_net.DenseNet_169,
+                1000,
+                14_149_480,  # https://docs.pytorch.org/vision/main/models/generated/torchvision.models.densenet169.html
+            ),
+            (
+                dense_net.DenseNet_201,
+                1000,
+                20_013_928,  # https://docs.pytorch.org/vision/main/models/generated/torchvision.models.densenet201.html
+            ),
         ],
     )
     def test_model_param_count(self, model_cls: nn.Module, num_classes: int, expected_params: int) -> None:
@@ -267,6 +286,24 @@ class TestModels:
                 1000,
                 4.23 * 10**9,
             ),  # https://docs.pytorch.org/vision/main/models/generated/torchvision.models.resnet18.html
+            (
+                dense_net.DenseNet_121,
+                1000,
+                2.83
+                * 10**9,  # https://docs.pytorch.org/vision/main/models/generated/torchvision.models.densenet121.html
+            ),
+            (
+                dense_net.DenseNet_169,
+                1000,
+                3.36
+                * 10**9,  # https://docs.pytorch.org/vision/main/models/generated/torchvision.models.densenet169.html
+            ),
+            (
+                dense_net.DenseNet_201,
+                1000,
+                4.29
+                * 10**9,  # https://docs.pytorch.org/vision/main/models/generated/torchvision.models.densenet201.html
+            ),
         ],
     )
     def test_flops_match_paper(self, model_cls: nn.Module, num_classes: int, published: float) -> None:
