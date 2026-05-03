@@ -81,7 +81,7 @@ To ensure results are the same everytime, a seed is set at the beginning
 
 #### Wandb experiments
 
-Add option for training in wandb. It logs the following:
+Add options for training in wandb. It logs the following:
 - epoch
 - train step metrics (loss and accuracy)
 - train epochs metrics (loss and accuracy)
@@ -155,7 +155,7 @@ Additional details:
 
 #### Wandb experiments
 
-Add option for training in wandb. It logs the following:
+Add options for training in wandb. It logs the following:
 - epoch
 - train step metrics (loss and accuracy)
 - train epochs metrics (loss and accuracy)
@@ -604,7 +604,7 @@ DenseNet introduced connecting each layer to all previous layers in the block in
 It is implemented [here](ch_08_Modern_Convolutional_Neural_Networks/densenet.py).
 For this, I based myself on the d2l implementation.
 
-There are 3 implementations available in the library: DenseNet121, DenseNet169, DensetNet201. From the original paper.
+There are 3 implementations available in the library: DenseNet121, DenseNet169, DenseNet201. From the original paper.
 
 The parameter count from all of those match the implementations in torchvision.
 
